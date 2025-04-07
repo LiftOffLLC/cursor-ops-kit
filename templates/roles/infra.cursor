@@ -1,0 +1,17 @@
+{
+  "aiPermissions": {
+    "devops": {
+      "allowInfraEdits": true,
+      "respectIaCBoundaries": false
+    }
+  },
+  "robustness": {
+    "suggestLoggingEnhancements": true,
+    "warnIfNoErrorHandling": true,
+    "encourageTelemetry": true
+  },
+  "reviewAssistant": {
+    "highlightSecurityRisks": true,
+    "reviewEveryAIDiff": true
+  }
+}
