@@ -1,0 +1,16 @@
+# Git
+.git
+.gitignore
+
+# Tests
+coverage
+*.test.js
+
+# Development
+.vscode
+.idea
+*.log
+.DS_Store
+
+# CI/CD
+.github/workflows 

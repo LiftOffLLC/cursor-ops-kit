@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+const path = require('path');
 const { execSync } = require('child_process');
 const yargs = require('yargs/yargs');
 const { hideBin } = require('yargs/helpers');
@@ -88,11 +89,13 @@ if (command === 'init') {
     interactiveInit();
   } else {
     const dryRun = argv['dry-run'] ? 'DRY_RUN=1 ' : '';
-    execSync(`${dryRun}node ./lib/init.js ${argv.role}`, { stdio: 'inherit' });
+    const initPath = path.resolve(__dirname, '../lib/init.js');
+    execSync(`${dryRun}node ${initPath} ${argv.role}`, { stdio: 'inherit' });
   }
 } else if (command === 'merge') {
   const dryRun = argv['dry-run'] ? 'DRY_RUN=1 ' : '';
-  execSync(`${dryRun}node ./lib/merge.js ${argv.role}`, { stdio: 'inherit' });
+  const mergePath = path.resolve(__dirname, '../lib/merge.js');
+  execSync(`${dryRun}node ${mergePath} ${argv.role}`, { stdio: 'inherit' });
 } else if (command === 'diff') {
   compareConfigs();
 } else if (command === 'backup') {
@@ -113,7 +116,8 @@ if (command === 'init') {
     console.log(`Removed ${count} old backups`);
   }
 } else if (command === 'audit') {
-  execSync('node ./lib/audit.js', { stdio: 'inherit' });
+  const auditPath = path.resolve(__dirname, '../lib/audit.js');
+  execSync(`node ${auditPath}`, { stdio: 'inherit' });
 } else if (command === 'version') {
   console.log(`Current version: ${version}`);
   try {
