@@ -121,10 +121,10 @@ if (command === 'init') {
 } else if (command === 'version') {
   console.log(`Current version: ${version}`);
   try {
-    const latestVersion = execSync('npm view @liftoff/cursor-ops version').toString().trim();
+    const latestVersion = execSync('npm view @liftoffllc/cursor-ops version').toString().trim();
     if (latestVersion !== version) {
       console.log(`\nNew version available: ${latestVersion}`);
-      console.log('Run "npm install -g @liftoff/cursor-ops" to update');
+      console.log('Run "npm install -g @liftoffllc/cursor-ops" to update');
     } else {
       console.log('\nYou are using the latest version');
     }
