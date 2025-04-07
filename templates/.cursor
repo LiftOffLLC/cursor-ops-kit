@@ -1,4 +1,42 @@
 {
+  "version": "1.0.0",
+  "rules": [
+    {
+      "name": "enforceConsistentNaming",
+      "type": "naming",
+      "pattern": "^[a-z][a-zA-Z0-9]*$",
+      "enabled": true,
+      "severity": "error"
+    },
+    {
+      "name": "enforceCommentStyle",
+      "type": "comment",
+      "pattern": "^// [A-Z].*$",
+      "enabled": true,
+      "severity": "warn"
+    },
+    {
+      "name": "enforceErrorHandling",
+      "type": "code",
+      "pattern": "try\\s*{[^}]*}\\s*catch",
+      "enabled": true,
+      "severity": "error"
+    },
+    {
+      "name": "enforceTestCoverage",
+      "type": "test",
+      "pattern": ".*\\.test\\.(js|ts)$",
+      "enabled": true,
+      "severity": "warn"
+    },
+    {
+      "name": "enforceLogging",
+      "type": "code",
+      "pattern": "console\\.(log|info|warn|error)",
+      "enabled": true,
+      "severity": "warn"
+    }
+  ],
   "aiIntegration": {
     "autoSuggest": true,
     "trackAllChanges": true,
