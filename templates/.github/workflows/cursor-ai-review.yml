@@ -1,0 +1,14 @@
+name: Cursor AI Review
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  ai-review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Trigger Cursor AI Review
+        run: echo "Stub for cursor AI review CI step"

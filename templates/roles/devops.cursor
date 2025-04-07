@@ -1,0 +1,18 @@
+{
+  "aiPermissions": {
+    "devops": {
+      "allowYamlAndPipelineEdits": true,
+      "suggestObservabilityEnhancements": true,
+      "respectIaCBoundaries": false,
+      "allowInfraEdits": true
+    }
+  },
+  "reviewAssistant": {
+    "highlightSecurityRisks": true,
+    "reviewEveryAIDiff": true
+  },
+  "auditTrail": {
+    "logAllAIContributions": true,
+    "preventHiddenEdits": true
+  }
+}
