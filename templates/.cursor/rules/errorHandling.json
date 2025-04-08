@@ -1,0 +1,28 @@
+{
+  "name": "errorHandling",
+  "patterns": [
+    {
+      "pattern": "try\\s*{[^}]*}\\s*catch\\s*\\([^)]*\\)\\s*{[^}]*}(?!\\s*finally)",
+      "message": "Consider adding a finally block for cleanup"
+    },
+    {
+      "pattern": "\\.catch\\s*\\([^)]*\\)\\s*{",
+      "message": "Handle promise rejections properly"
+    },
+    {
+      "pattern": "throw\\s+(?!new\\s+Error)",
+      "message": "Throw Error objects instead of literals"
+    },
+    {
+      "pattern": "catch\\s*\\(\\s*error\\s*\\)",
+      "message": "Use more specific error types when possible"
+    },
+    {
+      "pattern": "Promise\\.all\\((?![^)]*\\.map)",
+      "message": "Consider using Promise.allSettled for better error handling"
+    }
+  ],
+  "enabled": true,
+  "severity": "warn",
+  "scope": "global"
+}

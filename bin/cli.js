@@ -7,7 +7,9 @@ const { version } = require('../package.json');
 const { interactiveInit } = require('../lib/interactive');
 const { compareConfigs } = require('../lib/diff');
 const { listBackups, restoreBackup, cleanupBackups } = require('../lib/backup');
-const { setLogLevel } = require('../lib/logger');
+const { setLogLevel, info, success, warn, error } = require('../lib/logger');
+const { syncRules, testRules, readGlobalRules, readProjectRules } = require('../lib/rules');
+const { initializeProject } = require('../lib/init');
 
 const argv = yargs(hideBin(process.argv))
   .option('log-level', {
@@ -16,20 +18,20 @@ const argv = yargs(hideBin(process.argv))
     default: 'info'
   })
   .command('init', 'Initialize Cursor configuration', (yargs) => {
-    return yargs.option('role', {
-      alias: 'r',
-      describe: 'Role to initialize (frontend, devops, infra, backend)',
-      type: 'string'
-    }).option('dry-run', {
-      describe: 'Preview changes without applying them',
-      type: 'boolean',
-      default: false
-    }).option('interactive', {
-      alias: 'i',
-      describe: 'Run in interactive mode',
-      type: 'boolean',
-      default: false
-    });
+    return yargs
+      .option('interactive', {
+        alias: 'i',
+        type: 'boolean',
+        description: 'Run in interactive mode'
+      });
+  }, async (argv) => {
+    try {
+      await initializeProject(argv);
+      info('Successfully initialized Cursor configuration');
+    } catch (err) {
+      error(`Failed to initialize: ${err.message}`);
+      process.exit(1);
+    }
   })
   .command('merge', 'Merge base .cursor with role override', (yargs) => {
     return yargs.option('role', {
@@ -50,6 +52,43 @@ const argv = yargs(hideBin(process.argv))
       type: 'string',
       demandOption: true
     });
+  })
+  .command('rules', 'Manage Cursor rules', (yargs) => {
+    return yargs
+      .command('sync', 'Sync rules between global and project settings', (yargs) => {
+        return yargs
+          .option('strategy', {
+            describe: 'Rule merge strategy (project-first, global-first, merge)',
+            type: 'string',
+            default: 'project-first'
+          })
+          .option('editors', {
+            describe: 'Editors to sync with (comma-separated)',
+            type: 'string',
+            default: 'cursor,vscode'
+          });
+      })
+      .command('test', 'Test rules before applying', (yargs) => {
+        return yargs
+          .option('files', {
+            describe: 'Specific files to test against (comma-separated)',
+            type: 'string'
+          })
+          .option('sample', {
+            describe: 'Number of random files to test against',
+            type: 'number',
+            default: 5
+          });
+      })
+      .command('list', 'List all available rules', (yargs) => {
+        return yargs
+          .option('scope', {
+            describe: 'Rule scope (global, project, all)',
+            type: 'string',
+            default: 'all'
+          });
+      })
+      .demandCommand(1, 'Please specify a rules command');
   })
   .command('backup', 'Manage configuration backups', (yargs) => {
     return yargs
@@ -98,6 +137,8 @@ if (command === 'init') {
   execSync(`${dryRun}node ${mergePath} ${argv.role}`, { stdio: 'inherit' });
 } else if (command === 'diff') {
   compareConfigs();
+} else if (command === 'rules') {
+  handleRulesCommand(argv);
 } else if (command === 'backup') {
   if (subcommand === 'list') {
     const backups = listBackups();
@@ -130,5 +171,100 @@ if (command === 'init') {
     }
   } catch (error) {
     console.error('Could not check for updates:', error.message);
+  }
+}
+
+async function handleRulesCommand(argv) {
+  const projectRoot = process.cwd();
+
+  if (argv._[1] === 'sync') {
+    const editors = argv.editors.split(',');
+    const success = await syncRules(projectRoot, {
+      mergeStrategy: argv.strategy,
+      editors
+    });
+    
+    if (success) {
+      success('Rules synced successfully');
+    } else {
+      error('Failed to sync rules');
+      process.exit(1);
+    }
+  }
+  
+  else if (argv._[1] === 'test') {
+    const files = argv.files ? argv.files.split(',') : [];
+    const { rules } = await readProjectRules(projectRoot);
+    
+    const results = await testRules(projectRoot, rules, {
+      sampleSize: argv.sample,
+      testFiles: files
+    });
+    
+    info('\nTest Results:');
+    if (results.passed.length > 0) {
+      success(`\n✓ ${results.passed.length} rules passed`);
+      results.passed.forEach(result => {
+        success(`  - ${result.rule}`);
+      });
+    }
+    
+    if (results.failed.length > 0) {
+      warn(`\n✗ ${results.failed.length} rules failed`);
+      results.failed.forEach(result => {
+        warn(`  - ${result.rule}`);
+        result.matches.forEach(match => {
+          warn(`    • ${match.file}: ${match.message}`);
+        });
+      });
+    }
+    
+    if (results.errors.length > 0) {
+      error('\n! Errors occurred:');
+      results.errors.forEach(err => {
+        error(`  - ${err}`);
+      });
+      process.exit(1);
+    }
+  }
+  
+  else if (argv._[1] === 'list') {
+    const scope = argv.scope;
+    const rules = new Map();
+    
+    if (scope === 'all' || scope === 'global') {
+      const globalRules = await readGlobalRules();
+      globalRules.rules.forEach(rule => {
+        rules.set(rule.name, { ...rule, scope: 'global' });
+      });
+    }
+    
+    if (scope === 'all' || scope === 'project') {
+      const projectRules = await readProjectRules(projectRoot);
+      projectRules.rules.forEach(rule => {
+        const existing = rules.get(rule.name);
+        if (existing) {
+          rules.set(rule.name, { ...rule, scope: 'both' });
+        } else {
+          rules.set(rule.name, { ...rule, scope: 'project' });
+        }
+      });
+    }
+    
+    info('\nAvailable Rules:');
+    Array.from(rules.values()).forEach(rule => {
+      const scopeColor = {
+        global: '\x1b[36m', // cyan
+        project: '\x1b[32m', // green
+        both: '\x1b[33m' // yellow
+      }[rule.scope];
+      
+      info(`\n${scopeColor}${rule.name}\x1b[0m (${rule.scope})`);
+      if (rule.patterns) {
+        rule.patterns.forEach(pattern => {
+          info(`  • ${pattern.message}`);
+        });
+      }
+    });
   }
 }

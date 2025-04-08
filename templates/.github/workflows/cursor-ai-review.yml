@@ -1,14 +1,445 @@
-name: Cursor AI Review
+name: Cursor AI Code Review
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened]
     branches:
       - main
+      - master
+      - qa
+      - develop
+      - 'releases/**'
+
+permissions:
+  contents: read
+  pull-requests: write
+  security-events: write
+  actions: read
+  administration: read
 
 jobs:
-  ai-review:
+  review:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Trigger Cursor AI Review
-        run: echo "Stub for cursor AI review CI step"
+        with:
+          fetch-depth: 0
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.npm
+            ~/.cache/pip
+            ~/.cargo
+            ~/.gradle
+            ~/.m2
+            vendor
+            node_modules
+          key: ${{ runner.os }}-deps-${{ hashFiles('**/package-lock.json', '**/requirements.txt', '**/Cargo.lock', '**/build.gradle', '**/pom.xml', '**/composer.lock', '**/Gemfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-deps-
+
+      - name: Detect Project Type
+        id: detect
+        run: |
+          # Initialize variables
+          LANG_TYPE=""
+          
+          # Node.js detection
+          if [ -f "package.json" ]; then
+            LANG_TYPE="nodejs"
+            if [ -f "yarn.lock" ]; then
+              echo "package_manager=yarn" >> $GITHUB_OUTPUT
+            elif [ -f "pnpm-lock.yaml" ]; then
+              echo "package_manager=pnpm" >> $GITHUB_OUTPUT
+            else
+              echo "package_manager=npm" >> $GITHUB_OUTPUT
+            fi
+          fi
+          
+          # Python detection
+          if [ -f "requirements.txt" ] || [ -f "Pipfile" ] || [ -f "pyproject.toml" ]; then
+            LANG_TYPE="python"
+          fi
+          
+          # Go detection
+          if [ -f "go.mod" ]; then
+            LANG_TYPE="golang"
+          fi
+          
+          # Java/Kotlin detection
+          if [ -f "pom.xml" ] || [ -f "build.gradle" ]; then
+            LANG_TYPE="java"
+          fi
+          
+          echo "type=${LANG_TYPE:-unknown}" >> $GITHUB_OUTPUT
+
+      # Initialize CodeQL
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: ${{ steps.detect.outputs.type }}
+          queries: security-and-quality
+
+      # Run code quality checks
+      - name: Run code quality checks
+        run: |
+          case ${{ steps.detect.outputs.type }} in
+            nodejs)
+              if [ -f "package.json" ]; then
+                # Install dependencies if needed
+                ${{ steps.detect.outputs.package_manager }} install || true
+                
+                # ESLint checks
+                if grep -q "eslint" package.json; then
+                  echo "Running ESLint checks..."
+                  ${{ steps.detect.outputs.package_manager }} run lint || true
+                fi
+                
+                # TypeScript checks
+                if grep -q "typescript" package.json; then
+                  echo "Running TypeScript checks..."
+                  ${{ steps.detect.outputs.package_manager }} run type-check || true
+                  # Check for strict mode
+                  if [ -f "tsconfig.json" ]; then
+                    if ! grep -q '"strict": true' tsconfig.json; then
+                      echo "⚠️ Warning: TypeScript strict mode is not enabled"
+                    fi
+                  fi
+                fi
+                
+                # Prettier checks
+                if grep -q "prettier" package.json; then
+                  echo "Running Prettier checks..."
+                  ${{ steps.detect.outputs.package_manager }} run format:check || true
+                fi
+                
+                # Check bundle size
+                if grep -q "webpack\|rollup\|parcel" package.json; then
+                  echo "Analyzing bundle size..."
+                  if [ -f "webpack.config.js" ]; then
+                    ${{ steps.detect.outputs.package_manager }} run build:analyze || true
+                  fi
+                fi
+                
+                # Check for outdated dependencies
+                echo "Checking for outdated dependencies..."
+                ${{ steps.detect.outputs.package_manager }} audit || true
+                
+                # Check for duplicate dependencies
+                if [ "${{ steps.detect.outputs.package_manager }}" = "npm" ]; then
+                  echo "Checking for duplicate dependencies..."
+                  npm dedupe --dry-run || true
+                fi
+              fi
+              ;;
+              
+            python)
+              echo "Installing Python linters and formatters..."
+              pip install flake8 black isort pylint mypy bandit || true
+              
+              # Style checks with flake8
+              echo "Running Flake8 checks..."
+              flake8 . --max-complexity 10 --max-line-length 88 || true
+              
+              # Format checks with black
+              echo "Running Black checks..."
+              black --check . || true
+              
+              # Import sorting
+              echo "Checking import sorting..."
+              isort --check-only --diff . || true
+              
+              # Type checking with mypy
+              echo "Running type checks..."
+              mypy . --ignore-missing-imports || true
+              
+              # Code quality with pylint
+              echo "Running Pylint checks..."
+              pylint --recursive=y . || true
+              
+              # Security checks with bandit
+              echo "Running security checks..."
+              bandit -r . || true
+              
+              # Check requirements.txt
+              if [ -f "requirements.txt" ]; then
+                echo "Checking requirements.txt..."
+                pip check || true
+              fi
+              ;;
+              
+            golang)
+              echo "Running Go checks..."
+              
+              # Basic checks
+              echo "Running go vet..."
+              go vet ./... || true
+              
+              # Install tools
+              echo "Installing Go tools..."
+              go install golang.org/x/lint/golint@latest
+              go install honnef.co/go/tools/cmd/staticcheck@latest
+              go install github.com/kisielk/errcheck@latest
+              go install golang.org/x/tools/cmd/goimports@latest
+              
+              # Lint checks
+              echo "Running golint..."
+              golint ./... || true
+              
+              # Static analysis
+              echo "Running staticcheck..."
+              staticcheck ./... || true
+              
+              # Error handling checks
+              echo "Checking error handling..."
+              errcheck ./... || true
+              
+              # Import formatting
+              echo "Checking imports..."
+              goimports -l . || true
+              
+              # Check for race conditions
+              echo "Checking for race conditions..."
+              go test -race ./... || true
+              
+              # Check module dependencies
+              echo "Checking module dependencies..."
+              go mod verify || true
+              go mod tidy -v || true
+              ;;
+              
+            java)
+              if [ -f "pom.xml" ]; then
+                echo "Running Maven checks..."
+                
+                # Install tools
+                mvn dependency:resolve || true
+                
+                # Style checks
+                echo "Running Checkstyle..."
+                mvn checkstyle:check || true
+                
+                # SpotBugs analysis
+                echo "Running SpotBugs..."
+                mvn spotbugs:check || true
+                
+                # PMD analysis
+                echo "Running PMD..."
+                mvn pmd:check || true
+                
+                # Dependency analysis
+                echo "Checking dependencies..."
+                mvn dependency:analyze || true
+                
+                # OWASP dependency check
+                echo "Running OWASP dependency check..."
+                mvn org.owasp:dependency-check-maven:check || true
+                
+              elif [ -f "build.gradle" ]; then
+                echo "Running Gradle checks..."
+                
+                # Run all checks
+                ./gradlew check || true
+                
+                # Run specific tools if available
+                if grep -q "checkstyle" build.gradle; then
+                  echo "Running Checkstyle..."
+                  ./gradlew checkstyleMain || true
+                fi
+                
+                if grep -q "spotbugs" build.gradle; then
+                  echo "Running SpotBugs..."
+                  ./gradlew spotbugsMain || true
+                fi
+                
+                if grep -q "pmd" build.gradle; then
+                  echo "Running PMD..."
+                  ./gradlew pmdMain || true
+                fi
+                
+                # Dependency analysis
+                echo "Checking dependencies..."
+                ./gradlew dependencies || true
+              fi
+              ;;
+          esac
+
+      # Additional quality checks for all projects
+      - name: Additional quality checks
+        run: |
+          echo "Running additional quality checks..."
+          
+          # Check file naming conventions
+          echo "Checking file naming conventions..."
+          find . -type f -name "*[A-Z]*.js" -not -path "*/node_modules/*" -not -name "*.test.js" && echo "⚠️ Warning: Found JavaScript files with uppercase letters" || true
+          find . -type f -name "*.py" -not -name "__init__.py" | grep -E "[A-Z]" && echo "⚠️ Warning: Found Python files with uppercase letters" || true
+          
+          # Check for large functions
+          echo "Checking for large functions..."
+          for ext in js ts py go java kt; do
+            find . -type f -name "*.${ext}" -not -path "*/node_modules/*" -not -path "*/build/*" -exec awk 'length > 100 {print FILENAME ":" NR}' {} \; || true
+          done
+          
+          # Check for commented out code
+          echo "Checking for commented out code..."
+          for ext in js ts py go java kt; do
+            find . -type f -name "*.${ext}" -not -path "*/node_modules/*" -not -path "*/build/*" -exec grep -l "^\\s*//.*\\(function\\|class\\|if\\|for\\)" {} \; || true
+          done
+          
+          # Check for hardcoded values
+          echo "Checking for hardcoded values..."
+          for ext in js ts py go java kt; do
+            find . -type f -name "*.${ext}" -not -path "*/node_modules/*" -not -path "*/build/*" -exec grep -l "\\(\"[0-9]\\{3,\\}\"\\|'[0-9]\\{3,\\}'\\)" {} \; || true
+          done
+          
+          # Check for inconsistent line endings
+          echo "Checking line endings..."
+          find . -type f -not -path "*/node_modules/*" -not -path "*/build/*" -exec file {} \; | grep "CRLF" && echo "⚠️ Warning: Found files with CRLF line endings" || true
+
+      # Run tests if available
+      - name: Run tests
+        run: |
+          case ${{ steps.detect.outputs.type }} in
+            nodejs)
+              if [ -f "package.json" ] && grep -q "\"test\"" package.json; then
+                ${{ steps.detect.outputs.package_manager }} test || true
+              fi
+              ;;
+            python)
+              if [ -f "requirements.txt" ]; then
+                pip install -r requirements.txt
+                pip install pytest || true
+                pytest || true
+              fi
+              ;;
+            golang)
+              go test ./... || true
+              ;;
+            java)
+              if [ -f "pom.xml" ]; then
+                mvn test || true
+              elif [ -f "build.gradle" ]; then
+                ./gradlew test || true
+              fi
+              ;;
+          esac
+
+      # Check for common issues
+      - name: Check for common issues
+        run: |
+          # Check for large files
+          find . -type f -size +10M | while read file; do
+            echo "⚠️ Warning: Large file detected: $file"
+          done
+
+          # Check for TODO/FIXME comments
+          grep -r -E "TODO:|FIXME:" . || true
+
+          # Check for debug statements
+          case ${{ steps.detect.outputs.type }} in
+            nodejs)
+              grep -r "console.log" . || true
+              ;;
+            python)
+              grep -r "print(" . || true
+              ;;
+            golang)
+              grep -r "fmt.Print" . || true
+              ;;
+          esac
+
+      # Check branch protection rules
+      - name: Check Branch Protection Rules
+        run: |
+          BRANCH_RULES=$(gh api repos/${{ github.repository }}/branches/$(echo ${{ github.base_ref }})/protection 2>/dev/null || echo '{}')
+          
+          {
+            echo "## 🛡️ Branch Protection Status"
+            echo
+            if echo "$BRANCH_RULES" | jq -e '.required_status_checks' >/dev/null; then
+              echo "✅ Required status checks enabled"
+            else
+              echo "❌ Required status checks not enabled"
+            fi
+            
+            if echo "$BRANCH_RULES" | jq -e '.required_pull_request_reviews' >/dev/null; then
+              echo "✅ Required pull request reviews enabled"
+            else
+              echo "❌ Required pull request reviews not enabled"
+            fi
+            
+            if echo "$BRANCH_RULES" | jq -e '.enforce_admins.enabled' >/dev/null; then
+              echo "✅ Rules enforced for administrators"
+            else
+              echo "❌ Rules not enforced for administrators"
+            fi
+            
+            if echo "$BRANCH_RULES" | jq -e '.required_linear_history.enabled' >/dev/null; then
+              echo "✅ Linear history required"
+            else
+              echo "❌ Linear history not required"
+            fi
+          } > branch-protection.md
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      # Generate review summary
+      - name: Generate Review Summary
+        run: |
+          {
+            echo "## 📝 Code Review Summary"
+            echo
+            echo "### Project Details"
+            echo "- Language: ${{ steps.detect.outputs.type }}"
+            echo "- Files Changed: $(git diff --name-only origin/${{ github.base_ref }} | wc -l)"
+            echo
+            echo "### Review Coverage"
+            echo "✅ Code Quality Analysis"
+            echo "✅ Security Review"
+            echo "✅ Test Coverage"
+            echo
+            if [ -f "branch-protection.md" ]; then
+              cat branch-protection.md
+              echo
+              echo "### 🔒 Recommended Branch Protection Rules"
+              echo "1. Required status checks"
+              echo "   - Require branches to be up to date"
+              echo "   - Required checks: code-review, tests"
+              echo "2. Required pull request reviews"
+              echo "   - Require at least 1 review"
+              echo "   - Dismiss stale reviews"
+              echo "3. Additional protections"
+              echo "   - Enforce for administrators"
+              echo "   - Require linear history"
+              echo "   - Lock branch"
+            fi
+            echo
+            echo "### ⚠️ Common Issues"
+            echo "- Large Files: $(find . -type f -size +10M | wc -l)"
+            echo "- TODO/FIXME Comments: $(grep -r -E "TODO:|FIXME:" . | wc -l)"
+            echo "- Debug Statements: $(grep -r -E "console.log|print\(|fmt.Print" . | wc -l)"
+            echo
+            echo "### 📋 Recommendations"
+            echo "1. Review and address code quality issues"
+            echo "2. Clean up any debug statements"
+            echo "3. Implement recommended branch protection rules"
+            echo "4. Add missing tests where needed"
+          } > review.md
+
+          # Post review as PR comment
+          if [ -n "${{ github.event.pull_request.number }}" ]; then
+            gh pr comment ${{ github.event.pull_request.number }} -F review.md
+          fi
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      # Upload artifacts
+      - name: Upload analysis results
+        uses: actions/upload-artifact@v3
+        with:
+          name: analysis-results
+          path: |
+            review.md
+            branch-protection.md

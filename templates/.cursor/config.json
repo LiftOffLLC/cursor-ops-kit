@@ -1,0 +1,13 @@
+{
+  "version": "1.0.0",
+  "rules": {
+    "enabled": true,
+    "autoSync": true,
+    "syncInterval": 300,
+    "mergeStrategy": "project-first"
+  },
+  "editor": {
+    "cursor": true,
+    "vscode": true
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "name": "security",
+  "patterns": [
+    {
+      "pattern": "(password|secret|token|key)\\s*=\\s*['\"][^'\"]+\"'",
+      "message": "Do not hardcode sensitive information"
+    },
+    {
+      "pattern": "eval\\s*\\(",
+      "message": "Avoid using eval() for security reasons"
+    },
+    {
+      "pattern": "\\.innerHTML\\s*=",
+      "message": "Use safer alternatives to innerHTML"
+    },
+    {
+      "pattern": "\\bdebugger\\b",
+      "message": "Remove debugger statements"
+    },
+    {
+      "pattern": "\\b(http|ws)://",
+      "message": "Use HTTPS/WSS for secure connections"
+    }
+  ],
+  "enabled": true,
+  "severity": "error",
+  "scope": "global"
+}

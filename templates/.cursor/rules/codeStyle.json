@@ -1,0 +1,32 @@
+{
+  "name": "codeStyle",
+  "patterns": [
+    {
+      "pattern": "^\\s{2}[^\\s]",
+      "message": "Use 2 spaces for indentation"
+    },
+    {
+      "pattern": "^[a-z][a-zA-Z0-9]*$",
+      "message": "Use camelCase for variable and function names"
+    },
+    {
+      "pattern": "\\b[A-Z][A-Z0-9_]+\\b",
+      "message": "Use UPPER_CASE for constants"
+    },
+    {
+      "pattern": "\\b[A-Z][a-zA-Z0-9]*\\b",
+      "message": "Use PascalCase for class names"
+    },
+    {
+      "pattern": "\\s+$",
+      "message": "Remove trailing whitespace"
+    },
+    {
+      "pattern": "\\t",
+      "message": "Use spaces instead of tabs"
+    }
+  ],
+  "enabled": true,
+  "severity": "warn",
+  "scope": "global"
+}

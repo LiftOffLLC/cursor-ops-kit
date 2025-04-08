@@ -1,16 +1,57 @@
-# Git
-.git
-.gitignore
-
-# Tests
-coverage
-*.test.js
-
-# Development
-.vscode
-.idea
+# Development files
+.git/
+.github/
+.vscode/
+.idea/
 *.log
-.DS_Store
+*.pid
+*.seed
+*.pid.lock
 
-# CI/CD
-.github/workflows 
+# Test files
+test/
+coverage/
+.nyc_output/
+
+# Build files
+dist/
+build/
+*.tgz
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Editor files
+.DS_Store
+*.swp
+*.swo
+
+# Temporary files
+.tmp/
+.temp/
+.cache/
+
+# Development configurations
+.eslintrc*
+.prettierrc*
+.babelrc*
+tsconfig.json
+jest.config.js
+
+# Documentation
+docs/
+*.md
+!README.md
+
+# Source control
+.gitignore
+.gitattributes
+.editorconfig
+
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml 

@@ -1,0 +1,210 @@
+{
+  "version": "1.0.0",
+  "rules": [
+    {
+      "name": "codeStyle",
+      "patterns": [
+        {
+          "pattern": "^\\s{2}[^\\s]",
+          "message": "Use 2 spaces for indentation"
+        },
+        {
+          "pattern": "^[a-z][a-zA-Z0-9]*$",
+          "message": "Use camelCase for variable and function names"
+        },
+        {
+          "pattern": "\\b[A-Z][A-Z0-9_]+\\b",
+          "message": "Use UPPER_CASE for constants"
+        },
+        {
+          "pattern": "\\b[A-Z][a-zA-Z0-9]*\\b",
+          "message": "Use PascalCase for class names"
+        },
+        {
+          "pattern": "\\s+$",
+          "message": "Remove trailing whitespace"
+        },
+        {
+          "pattern": "\\t",
+          "message": "Use spaces instead of tabs"
+        }
+      ]
+    },
+    {
+      "name": "errorHandling",
+      "patterns": [
+        {
+          "pattern": "try\\s*{[^}]*}\\s*catch\\s*\\([^)]*\\)\\s*{[^}]*}(?!\\s*finally)",
+          "message": "Consider adding a finally block for cleanup"
+        },
+        {
+          "pattern": "\\.catch\\s*\\([^)]*\\)\\s*{",
+          "message": "Handle promise rejections properly"
+        },
+        {
+          "pattern": "throw\\s+(?!new\\s+Error)",
+          "message": "Throw Error objects instead of literals"
+        },
+        {
+          "pattern": "catch\\s*\\(\\s*error\\s*\\)",
+          "message": "Use more specific error types when possible"
+        },
+        {
+          "pattern": "Promise\\.all\\((?![^)]*\\.map)",
+          "message": "Consider using Promise.allSettled for better error handling"
+        }
+      ]
+    },
+    {
+      "name": "documentation",
+      "patterns": [
+        {
+          "pattern": "/\\*\\*[\\s\\S]*?\\*/",
+          "message": "Add JSDoc comments for functions"
+        },
+        {
+          "pattern": "@param\\s+{[^}]+}\\s+\\w+\\s+[^\\n]+",
+          "message": "Document parameters with types and descriptions"
+        },
+        {
+          "pattern": "@returns?\\s+{[^}]+}\\s+[^\\n]+",
+          "message": "Document return values with types and descriptions"
+        },
+        {
+          "pattern": "\\bTODO\\b(?!:)",
+          "message": "Add a colon and description after TODO"
+        },
+        {
+          "pattern": "\\bFIXME\\b(?!:)",
+          "message": "Add a colon and description after FIXME"
+        },
+        {
+          "pattern": "@deprecated\\b(?![^\\n]*\\breason:)",
+          "message": "Include reason for deprecation"
+        }
+      ]
+    },
+    {
+      "name": "security",
+      "patterns": [
+        {
+          "pattern": "(password|secret|token|key)\\s*=\\s*['\"][^'\"]+['\"]",
+          "message": "Do not hardcode sensitive information"
+        },
+        {
+          "pattern": "eval\\s*\\(",
+          "message": "Avoid using eval() for security reasons"
+        },
+        {
+          "pattern": "\\.innerHTML\\s*=",
+          "message": "Use safer alternatives to innerHTML"
+        },
+        {
+          "pattern": "\\bdebugger\\b",
+          "message": "Remove debugger statements"
+        },
+        {
+          "pattern": "\\b(http|ws)://",
+          "message": "Use HTTPS/WSS for secure connections"
+        },
+        {
+          "pattern": "\\b(exec|spawn)\\s*\\([^)]*(?<!\\besacpe)['\"]",
+          "message": "Sanitize command inputs to prevent injection"
+        }
+      ]
+    },
+    {
+      "name": "performance",
+      "patterns": [
+        {
+          "pattern": "\\+\\s*(?!==).*\\+",
+          "message": "Consider using template literals for string concatenation"
+        },
+        {
+          "pattern": "for\\s*\\(\\s*let\\s+\\w+\\s*=\\s*0",
+          "message": "Consider using array methods instead of for loops"
+        },
+        {
+          "pattern": "\\.forEach\\(.*=>.*await",
+          "message": "Use Promise.all with map for parallel async operations"
+        },
+        {
+          "pattern": "new\\s+Array\\(\\d+\\)",
+          "message": "Consider using array literal notation"
+        },
+        {
+          "pattern": "\\b(map|filter|reduce)\\s*\\([^)]*\\)\\s*\\.(map|filter|reduce)",
+          "message": "Chain array methods efficiently"
+        }
+      ]
+    },
+    {
+      "name": "bestPractices",
+      "patterns": [
+        {
+          "pattern": "\\bconsole\\.(log|debug)\\b",
+          "message": "Use proper logging library instead of console"
+        },
+        {
+          "pattern": "\\bsetTimeout\\s*\\(\\s*[^,]+\\s*\\)",
+          "message": "Specify timeout duration"
+        },
+        {
+          "pattern": "\\bprocess\\.env\\.",
+          "message": "Consider using a configuration management system"
+        },
+        {
+          "pattern": "\\b(var)\\b",
+          "message": "Use let or const instead of var"
+        },
+        {
+          "pattern": "\\b(==|!=)\\b",
+          "message": "Use strict equality === or !=="
+        }
+      ]
+    },
+    {
+      "name": "testing",
+      "patterns": [
+        {
+          "pattern": "describe\\(['\"][^'\"]+['\"]\\s*,\\s*\\(\\)\\s*=>\\s*{(?![^}]*it\\()",
+          "message": "Empty describe block - add test cases"
+        },
+        {
+          "pattern": "it\\(['\"]should[^'\"]+['\"]",
+          "message": "Use declarative test descriptions"
+        },
+        {
+          "pattern": "\\bexpect\\([^)]+\\)\\.toBe\\(true\\)",
+          "message": "Use more specific assertions"
+        },
+        {
+          "pattern": "\\bbeforeAll\\(\\s*async\\s*\\(\\)\\s*=>\\s*{[^}]*}\\s*\\)",
+          "message": "Consider cleanup in afterAll"
+        }
+      ]
+    }
+  ],
+  "suggestions": {
+    "documentation": [
+      "Consider adding architecture diagrams for complex features",
+      "Document environment variables in .env.example",
+      "Add setup instructions in README.md"
+    ],
+    "testing": [
+      "Add integration tests for critical paths",
+      "Include performance benchmarks",
+      "Add error scenario tests"
+    ],
+    "security": [
+      "Implement rate limiting for APIs",
+      "Add security headers",
+      "Regular dependency updates"
+    ],
+    "performance": [
+      "Consider implementing caching",
+      "Optimize asset loading",
+      "Use pagination for large datasets"
+    ]
+  }
+}
