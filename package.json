@@ -1,6 +1,6 @@
 {
   "name": "@liftoffllc/cursor-ops-kit",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "CLI to enforce Cursor IDE rules, CI, and hooks across repositories",
   "main": "lib/init.js",
   "bin": {
@@ -37,7 +37,7 @@
     "url": "https://github.com/LiftOffLLC/cursor-ops-kit/issues"
   },
   "devDependencies": {
-    "@liftoffllc/cursor-ops-kit": "^1.0.0",
+    "@liftoffllc/cursor-ops-kit": "^1.1.0",
     "@types/jest": "^29.5.0",
     "eslint": "^8.40.0",
     "jest": "^29.5.0"
