@@ -55,6 +55,17 @@ coverage/
 ehthumbs.db
 Thumbs.db
 
+# Infrastructure
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+.terraform.lock.hcl
+*.tfplan
+*.tfplan.json
+aws-credentials.json
+~/.aws/
+
 # Misc
 *.pid
 *.seed
