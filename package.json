@@ -12,6 +12,7 @@
     "test:coverage": "jest --coverage",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "prepare": "node scripts/prepare.js",
     "prepublishOnly": "npm run test && npm run lint"
   },
   "keywords": [

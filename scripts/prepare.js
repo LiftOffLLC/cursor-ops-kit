@@ -92,7 +92,7 @@ async function prepare() {
 
     // Create rules index
     const rulesIndex = {
-      version: '1.0.0',
+      version: '1.1.0',
       rules: defaultRules.map(rule => ({
         name: rule.name,
         file: `${rule.name}.json`,
@@ -106,7 +106,7 @@ async function prepare() {
     // Create or update config.json
     const configPath = path.join(cursorDir, 'config.json');
     const configData = {
-      version: '1.0.0',
+      version: '1.1.0',
       rules: {
         enabled: true,
         autoSync: true,
