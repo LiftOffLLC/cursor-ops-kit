@@ -14,7 +14,14 @@
     "lint:fix": "eslint . --fix",
     "prepublishOnly": "npm run test && npm run lint"
   },
-  "keywords": ["cursor", "cli", "ai", "devops", "frontend", "infra"],
+  "keywords": [
+    "cursor",
+    "cli",
+    "ai",
+    "devops",
+    "frontend",
+    "infra"
+  ],
   "author": "LiftOffLLC <noreply@liftoffllc.com> (https://github.com/LiftOffLLC)",
   "license": "MIT",
   "dependencies": {
@@ -30,6 +37,7 @@
     "url": "https://github.com/LiftOffLLC/cursor-ops-kit/issues"
   },
   "devDependencies": {
+    "@liftoffllc/cursor-ops-kit": "^1.0.0",
     "@types/jest": "^29.5.0",
     "eslint": "^8.40.0",
     "jest": "^29.5.0"

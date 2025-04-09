@@ -8,6 +8,7 @@ const { interactiveInit } = require('../lib/interactive');
 const { compareConfigs } = require('../lib/diff');
 const { listBackups, restoreBackup, cleanupBackups } = require('../lib/backup');
 const { setLogLevel } = require('../lib/logger');
+const { mergeConfigs } = require('../lib/merge');
 
 const argv = yargs(hideBin(process.argv))
   .option('log-level', {
@@ -31,7 +32,7 @@ const argv = yargs(hideBin(process.argv))
       default: false
     });
   })
-  .command('merge', 'Merge base .cursor with role override', (yargs) => {
+  .command('merge', 'Merge base .cursor with role rules', (yargs) => {
     return yargs.option('role', {
       alias: 'r',
       describe: 'Role to merge with',
@@ -93,11 +94,12 @@ if (command === 'init') {
     execSync(`${dryRun}node ${initPath} ${argv.role}`, { stdio: 'inherit' });
   }
 } else if (command === 'merge') {
-  const dryRun = argv['dry-run'] ? 'DRY_RUN=1 ' : '';
-  const mergePath = path.resolve(__dirname, '../lib/merge.js');
-  execSync(`${dryRun}node ${mergePath} ${argv.role}`, { stdio: 'inherit' });
+  if (argv['dry-run']) {
+    console.info('Dry run mode: No changes will be made');
+  }
+  mergeConfigs(argv.role);
 } else if (command === 'diff') {
-  compareConfigs();
+  compareConfigs(argv.role);
 } else if (command === 'backup') {
   if (subcommand === 'list') {
     const backups = listBackups();
@@ -112,23 +114,11 @@ if (command === 'init') {
   } else if (subcommand === 'restore') {
     restoreBackup(argv.file);
   } else if (subcommand === 'cleanup') {
-    const count = cleanupBackups(argv.days);
-    console.log(`Removed ${count} old backups`);
+    cleanupBackups(argv.days);
   }
 } else if (command === 'audit') {
   const auditPath = path.resolve(__dirname, '../lib/audit.js');
   execSync(`node ${auditPath}`, { stdio: 'inherit' });
 } else if (command === 'version') {
-  console.log(`Current version: ${version}`);
-  try {
-    const latestVersion = execSync('npm view @liftoffllc/cursor-ops version').toString().trim();
-    if (latestVersion !== version) {
-      console.log(`\nNew version available: ${latestVersion}`);
-      console.log('Run "npm install -g @liftoffllc/cursor-ops" to update');
-    } else {
-      console.log('\nYou are using the latest version');
-    }
-  } catch (error) {
-    console.error('Could not check for updates:', error.message);
-  }
+  console.log(`Cursor Ops Kit v${version}`);
 }

@@ -1,0 +1,267 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Frontend Development Rules
+
+## React Patterns
+
+**Enabled:** true
+**Severity:** error
+
+### Patterns
+
+- Pattern: `useState\(\[\]\)`
+  Message: Initialize state with proper default values
+
+- Pattern: `useEffect\(\(\)\s*=>\s*{[^}]*},\s*\[\]\)`
+  Message: Include proper dependencies in useEffect
+
+- Pattern: `useCallback\(\(\)\s*=>\s*{[^}]*},\s*\[\]\)`
+  Message: Include proper dependencies in useCallback
+
+- Pattern: `useMemo\(\(\)\s*=>\s*{[^]},\s*\[\]\)`
+  Message: Include proper dependencies in useMemo
+
+- Pattern: `<div\s+onClick=`
+  Message: Use semantic HTML elements for better accessibility
+
+## Component Structure
+
+**Enabled:** true
+**Severity:** error
+
+### Patterns
+
+- Pattern: `export\s+default\s+function\s+\w+\s*\([^)]*\)\s*{`
+  Message: Use named exports for better tree-shaking
+
+- Pattern: `const\s+\w+\s*=\s*\([^)]*\)\s*=>\s*{`
+  Message: Use function declarations for components
+
+- Pattern: `import\s+\*\s+as\s+\w+\s+from`
+  Message: Import specific components instead of using namespace imports
+
+- Pattern: `<div\s+className=`
+  Message: Use CSS modules or styled-components for styling
+
+## State Management
+
+**Enabled:** true
+**Severity:** error
+
+### Patterns
+
+- Pattern: `useContext\([^)]*\)`
+  Message: Use proper context splitting for performance
+
+- Pattern: `useReducer\([^)]*\)`
+  Message: Implement proper action types and reducers
+
+- Pattern: `createSlice\([^)]*\)`
+  Message: Use proper Redux Toolkit patterns
+
+- Pattern: `useSelector\([^)]*\)`
+  Message: Memoize selectors for better performance
+
+## Performance
+
+**Enabled:** true
+**Severity:** warning
+
+### Patterns
+
+- Pattern: `<img\s+src=`
+  Message: Use proper image optimization and lazy loading
+
+- Pattern: `<video\s+src=`
+  Message: Implement proper video loading strategies
+
+- Pattern: `import\(['"]\.\./`
+  Message: Use proper code splitting and dynamic imports
+
+- Pattern: `React\.memo\(`
+  Message: Use memoization appropriately
+
+## Accessibility
+
+**Enabled:** true
+**Severity:** error
+
+### Patterns
+
+- Pattern: `<div\s+role=`
+  Message: Use semantic HTML elements instead of ARIA roles
+
+- Pattern: `<button\s+onClick=`
+  Message: Ensure buttons have proper keyboard interaction
+
+- Pattern: `<input\s+type=`
+  Message: Include proper labels and ARIA attributes
+
+- Pattern: `<img\s+alt=`
+  Message: Provide meaningful alt text for images
+
+## Testing
+
+**Enabled:** true
+**Severity:** error
+
+### Patterns
+
+- Pattern: `it\(['"]`
+  Message: Write comprehensive unit tests
+
+- Pattern: `render\(<`
+  Message: Test component rendering and interactions
+
+- Pattern: `fireEvent\.`
+  Message: Test user interactions properly
+
+- Pattern: `expect\(.*\)\.toBeInTheDocument\(\)`
+  Message: Use proper testing assertions
+
+## Error Handling
+
+**Enabled:** true
+**Severity:** error
+
+### Patterns
+
+- Pattern: `try\s*{[^}]*}\s*catch\s*\([^)]*\)\s*{}`
+  Message: Implement proper error boundaries
+
+- Pattern: `throw\s+new\s+Error\(['"]`
+  Message: Use custom error handling
+
+- Pattern: `console\.error\(`
+  Message: Use proper error logging
+
+## Form Handling
+
+**Enabled:** true
+**Severity:** error
+
+### Patterns
+
+- Pattern: `onSubmit=\([^)]*\)\s*=>\s*{`
+  Message: Implement proper form validation
+
+- Pattern: `useForm\([^)]*\)`
+  Message: Use proper form handling libraries
+
+- Pattern: `register\(['"]`
+  Message: Implement proper form field registration
+
+## Routing
+
+**Enabled:** true
+**Severity:** error
+
+### Patterns
+
+- Pattern: `Route\s+path=`
+  Message: Use proper route configuration
+
+- Pattern: `Link\s+to=`
+  Message: Use proper navigation components
+
+- Pattern: `useNavigate\(\)`
+  Message: Implement proper navigation handling
+
+## Styling
+
+**Enabled:** true
+**Severity:** warning
+
+### Patterns
+
+- Pattern: `style={{`
+  Message: Use CSS modules or styled-components
+
+- Pattern: `className=`
+  Message: Use proper CSS class naming
+
+- Pattern: `@media\s+\(`
+  Message: Implement responsive design properly
+
+## Internationalization
+
+**Enabled:** true
+**Severity:** warning
+
+### Patterns
+
+- Pattern: `t\(['"]`
+  Message: Use proper translation keys
+
+- Pattern: `i18n\.`
+  Message: Implement proper internationalization
+
+- Pattern: `formatMessage\(`
+  Message: Use proper message formatting
+
+## Security
+
+**Enabled:** true
+**Severity:** error
+
+### Patterns
+
+- Pattern: `dangerouslySetInnerHTML`
+  Message: Avoid using dangerouslySetInnerHTML
+
+- Pattern: `eval\(`
+  Message: Never use eval in frontend code
+
+- Pattern: `localStorage\.setItem\(`
+  Message: Implement proper data storage security
+
+## Performance Monitoring
+
+**Enabled:** true
+**Severity:** warning
+
+### Patterns
+
+- Pattern: `performance\.mark\(`
+  Message: Implement proper performance monitoring
+
+- Pattern: `new\s+PerformanceObserver\(`
+  Message: Use performance monitoring tools
+
+- Pattern: `web-vitals`
+  Message: Track core web vitals
+
+## Build Optimization
+
+**Enabled:** true
+**Severity:** warning
+
+### Patterns
+
+- Pattern: `import\s+.*\s+from\s+['"]\.\./`
+  Message: Use proper import optimization
+
+- Pattern: `webpack\.`
+  Message: Configure proper build optimization
+
+- Pattern: `babel\.`
+  Message: Use proper transpilation settings
+
+## Documentation
+
+**Enabled:** true
+**Severity:** warning
+
+### Patterns
+
+- Pattern: `/\*\*[^*]*\*/`
+  Message: Document components and hooks
+
+- Pattern: `@param`
+  Message: Document component props
+
+- Pattern: `@returns`
+  Message: Document component return values

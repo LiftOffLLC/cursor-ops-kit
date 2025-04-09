@@ -1,0 +1,390 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Backend Development Rules
+
+## API Design
+
+**Enabled:** true
+**Severity:** error
+
+### Patterns
+
+- Pattern: `@route\(['"](mdc:GET|POST|PUT|DELETE|PATCH)\s+([^'"]+)['"]\)`
+  Message: Follow RESTful API design principles and use proper HTTP methods
+
+- Pattern: `@route\(['"]\w+\s+/api/v\d+/`
+  Message: Version your APIs and maintain backward compatibility
+
+- Pattern: `@route\(['"]\w+\s+/api/[^/]+/`
+  Message: Use consistent URL patterns and resource naming
+
+- Pattern: `@route\(['"]\w+\s+/api/[^/]+/[^/]+/[^/]+/`
+  Message: Avoid deep nesting in API routes, keep it shallow
+
+- Pattern: `@route\(['"]\w+\s+/api/[^/]+/search`
+  Message: Implement proper search endpoints with pagination
+
+## Security
+
+**Enabled:** true
+**Severity:** error
+
+### Patterns
+
+- Pattern: `password\s*=\s*['"][^'"]+['"]`
+  Message: Never hardcode passwords or sensitive information
+
+- Pattern: `@auth\(['"]?none['"]?\)`
+  Message: Implement proper authentication for all endpoints
+
+- Pattern: `@auth\(['"]?basic['"]?\)`
+  Message: Use secure authentication methods (OAuth2, JWT)
+
+- Pattern: `CORS\([^)]*\)`
+  Message: Configure proper CORS policies with specific origins
+
+- Pattern: `process\.env\.\w+`
+  Message: Use environment variables for configuration
+
+- Pattern: `jwt\.sign\([^,]*,\s*['"][^'"]+['"]`
+  Message: Use strong secret keys for JWT signing
+
+- Pattern: `bcrypt\.hash\([^,]*,\s*\d+\)`
+  Message: Use appropriate salt rounds for password hashing
+
+## Database Operations
+
+**Enabled:** true
+**Severity:** error
+
+### Patterns
+
+- Pattern: `db\.query\(['"]SELECT\s+\*`
+  Message: Avoid SELECT * queries, specify required columns
+
+- Pattern: `db\.query\(['"]INSERT\s+INTO`
+  Message: Use parameterized queries to prevent SQL injection
+
+- Pattern: `db\.query\(['"]UPDATE\s+\w+\s+SET`
+  Message: Always include WHERE clause in UPDATE statements
+
+- Pattern: `db\.query\(['"]DELETE\s+FROM`
+  Message: Always include WHERE clause in DELETE statements
+
+- Pattern: `db\.query\(['"]SELECT.*FROM.*WHERE.*IN\s*\([^)]*\)`
+  Message: Use proper batch operations for IN clauses
+
+- Pattern: `db\.query\(['"]SELECT.*FROM.*ORDER\s+BY.*LIMIT\s+\d+`
+  Message: Implement proper pagination with OFFSET
+
+- Pattern: `db\.query\(['"]BEGIN\s+TRANSACTION`
+  Message: Handle transaction rollback in case of errors
+
+## Error Handling
+
+**Enabled:** true
+**Severity:** error
+
+### Patterns
+
+- Pattern: `try\s*{[^}]*}\s*catch\s*\([^)]*\)\s*{}`
+  Message: Implement proper error handling and logging
+
+- Pattern: `throw\s+new\s+Error\(['"]`
+  Message: Use custom error classes with proper error codes
+
+- Pattern: `console\.error\(`
+  Message: Use proper logging system instead of console.error
+
+- Pattern: `catch\s*\(e\)\s*{.*throw\s+e`
+  Message: Add context when re-throwing errors
+
+- Pattern: `Promise\.reject\(['"]`
+  Message: Use Error objects instead of strings for rejections
+
+## Input Validation
+
+**Enabled:** true
+**Severity:** error
+
+### Patterns
+
+- Pattern: `req\.body\.\w+\s*=\s*req\.body\.\w+\s*\|\|\s*['"]`
+  Message: Implement proper input validation and sanitization
+
+- Pattern: `JSON\.parse\(req\.body\)`
+  Message: Validate JSON input before parsing
+
+- Pattern: `req\.query\.\w+`
+  Message: Validate and sanitize query parameters
+
+- Pattern: `req\.files`
+  Message: Validate file uploads for type and size
+
+- Pattern: `req\.headers\['x-`
+  Message: Validate custom headers
+
+## Performance
+
+**Enabled:** true
+**Severity:** warning
+
+### Patterns
+
+- Pattern: `for\s*\([^;]*;[^;]*;[^)]*\)\s*{.*db\.query`
+  Message: Avoid database queries in loops
+
+- Pattern: `await\s+Promise\.all\(\[`
+  Message: Use Promise.all for parallel operations
+
+- Pattern: `setTimeout\([^,]*,\s*\d+\)`
+  Message: Use proper async/await patterns instead of setTimeout
+
+- Pattern: `JSON\.stringify\(`
+  Message: Consider streaming for large JSON responses
+
+- Pattern: `res\.send\(`
+  Message: Use proper response compression
+
+## Caching
+
+**Enabled:** true
+**Severity:** warning
+
+### Patterns
+
+- Pattern: `cache\.get\(['"]`
+  Message: Implement proper cache invalidation strategies
+
+- Pattern: `cache\.set\(['"]`
+  Message: Set appropriate cache TTL values
+
+- Pattern: `redis\.get\(['"]`
+  Message: Use Redis for distributed caching
+
+- Pattern: `cache\.del\(['"]`
+  Message: Implement cache busting for data updates
+
+- Pattern: `ETag\s*=\s*['"]`
+  Message: Use proper ETag generation for caching
+
+## Logging
+
+**Enabled:** true
+**Severity:** warning
+
+### Patterns
+
+- Pattern: `console\.log\(`
+  Message: Use structured logging system
+
+- Pattern: `logger\.info\(`
+  Message: Include proper context in log messages
+
+- Pattern: `logger\.error\(`
+  Message: Log errors with stack traces and context
+
+- Pattern: `logger\.debug\(`
+  Message: Use appropriate log levels
+
+- Pattern: `logger\.warn\(`
+  Message: Include actionable information in warnings
+
+## Testing
+
+**Enabled:** true
+**Severity:** error
+
+### Patterns
+
+- Pattern: `@test\(['"]`
+  Message: Write unit tests for all public methods
+
+- Pattern: `describe\(['"]`
+  Message: Include integration tests for API endpoints
+
+- Pattern: `beforeEach\(`
+  Message: Set up proper test fixtures and cleanup
+
+- Pattern: `jest\.mock\(`
+  Message: Mock external dependencies properly
+
+- Pattern: `expect\(.*\)\.toBe\(`
+  Message: Use appropriate assertion methods
+
+## Documentation
+
+**Enabled:** true
+**Severity:** warning
+
+### Patterns
+
+- Pattern: `/\*\*[^*]*\*/`
+  Message: Document all public methods and parameters
+
+- Pattern: `@param\s+\w+`
+  Message: Include parameter types and descriptions
+
+- Pattern: `@returns`
+  Message: Document return values and possible errors
+
+- Pattern: `@throws`
+  Message: Document possible exceptions
+
+- Pattern: `@example`
+  Message: Include usage examples
+
+## Database Migrations
+
+**Enabled:** true
+**Severity:** error
+
+### Patterns
+
+- Pattern: `CREATE\s+TABLE`
+  Message: Include proper indexes and constraints
+
+- Pattern: `ALTER\s+TABLE`
+  Message: Document schema changes and provide rollback scripts
+
+- Pattern: `DROP\s+TABLE`
+  Message: Implement proper backup before destructive operations
+
+- Pattern: `CREATE\s+INDEX`
+  Message: Document index creation rationale
+
+- Pattern: `FOREIGN\s+KEY`
+  Message: Handle foreign key constraints properly
+
+## Rate Limiting
+
+**Enabled:** true
+**Severity:** error
+
+### Patterns
+
+- Pattern: `rateLimit\([^)]*\)`
+  Message: Implement proper rate limiting for all endpoints
+
+- Pattern: `throttle\([^)]*\)`
+  Message: Configure appropriate rate limits per endpoint
+
+- Pattern: `redis\.incr\(['"]`
+  Message: Use Redis for distributed rate limiting
+
+- Pattern: `rateLimit\(.*windowMs:\s*\d+`
+  Message: Set appropriate time windows for rate limiting
+
+- Pattern: `rateLimit\(.*max:\s*\d+`
+  Message: Configure reasonable request limits
+
+## Health Checks
+
+**Enabled:** true
+**Severity:** warning
+
+### Patterns
+
+- Pattern: `@route\(['"]GET\s+/health['"]\)`
+  Message: Implement comprehensive health check endpoints
+
+- Pattern: `healthCheck\([^)]*\)`
+  Message: Include database and external service checks
+
+- Pattern: `status: ['"]UP['"]`
+  Message: Provide detailed health status information
+
+- Pattern: `checkDBConnection\(`
+  Message: Verify database connectivity
+
+- Pattern: `checkRedisConnection\(`
+  Message: Verify cache service connectivity
+
+## API Documentation
+
+**Enabled:** true
+**Severity:** warning
+
+### Patterns
+
+- Pattern: `@swagger`
+  Message: Maintain up-to-date API documentation
+
+- Pattern: `@openapi`
+  Message: Document API endpoints with OpenAPI/Swagger
+
+- Pattern: `@response`
+  Message: Document response schemas
+
+- Pattern: `@requestBody`
+  Message: Document request body schemas
+
+## Data Validation
+
+**Enabled:** true
+**Severity:** error
+
+### Patterns
+
+- Pattern: `joi\.validate\(`
+  Message: Use proper schema validation
+
+- Pattern: `validator\.isEmail\(`
+  Message: Validate email formats
+
+- Pattern: `validator\.isURL\(`
+  Message: Validate URL formats
+
+- Pattern: `validator\.isUUID\(`
+  Message: Validate UUID formats
+
+## Security Headers
+
+**Enabled:** true
+**Severity:** error
+
+### Patterns
+
+- Pattern: `helmet\(\)`
+  Message: Use security headers middleware
+
+- Pattern: `res\.setHeader\(['"]X-`
+  Message: Set appropriate security headers
+
+- Pattern: `Content-Security-Policy`
+  Message: Configure proper CSP headers
+
+## File Operations
+
+**Enabled:** true
+**Severity:** error
+
+### Patterns
+
+- Pattern: `fs\.readFile\(`
+  Message: Use proper file handling with error checking
+
+- Pattern: `fs\.writeFile\(`
+  Message: Implement proper file writing with backups
+
+- Pattern: `fs\.unlink\(`
+  Message: Handle file deletion safely
+
+## Queue Processing
+
+**Enabled:** true
+**Severity:** warning
+
+### Patterns
+
+- Pattern: `queue\.add\(`
+  Message: Implement proper job queuing
+
+- Pattern: `queue\.process\(`
+  Message: Handle job processing with retries
+
+- Pattern: `queue\.on\(['"]failed['"]`
+  Message: Implement proper error handling for failed jobs
