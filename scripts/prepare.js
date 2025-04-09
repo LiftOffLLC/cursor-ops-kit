@@ -12,12 +12,6 @@ async function prepare() {
 
     info('Preparing package for distribution...');
 
-    // Clean up existing rules directory
-    if (fs.existsSync(rulesDir)) {
-      await fs.remove(rulesDir);
-      info('Cleaned up existing rules directory');
-    }
-
     // Ensure required directories exist
     await fs.ensureDir(templatesDir);
     await fs.ensureDir(scriptsDir);
@@ -30,7 +24,9 @@ async function prepare() {
     // Validate required files exist
     const requiredFiles = [
       'templates/roles/frontend.cursor',
-      'templates/roles/backend.cursor'
+      'templates/roles/backend.cursor',
+      'templates/roles/infra.cursor',
+      'templates/roles/devops.cursor'
     ];
 
     for (const file of requiredFiles) {
@@ -42,66 +38,32 @@ async function prepare() {
 
     info('Validated required files');
 
-    // Create default rules
-    const defaultRules = [
-      {
-        name: 'codeStyle',
-        patterns: [
-          { pattern: '^\\s{2}[^\\s]', message: 'Use 2 spaces for indentation' },
-          { pattern: '^[a-z][a-zA-Z0-9]*$', message: 'Use camelCase for variable and function names' },
-          { pattern: '\\b[A-Z][A-Z0-9_]+\\b', message: 'Use UPPER_CASE for constants' },
-          { pattern: '\\b[A-Z][a-zA-Z0-9]*\\b', message: 'Use PascalCase for class names' },
-          { pattern: '\\s+$', message: 'Remove trailing whitespace' },
-          { pattern: '\\t', message: 'Use spaces instead of tabs' }
-        ]
-      },
-      {
-        name: 'errorHandling',
-        patterns: [
-          { pattern: 'try\\s*{[^}]*}\\s*catch\\s*\\([^)]*\\)\\s*{[^}]*}(?!\\s*finally)', message: 'Consider adding a finally block for cleanup' },
-          { pattern: '\\.catch\\s*\\([^)]*\\)\\s*{', message: 'Handle promise rejections properly' },
-          { pattern: 'throw\\s+(?!new\\s+Error)', message: 'Throw Error objects instead of literals' },
-          { pattern: 'catch\\s*\\(\\s*error\\s*\\)', message: 'Use more specific error types when possible' },
-          { pattern: 'Promise\\.all\\((?![^)]*\\.map)', message: 'Consider using Promise.allSettled for better error handling' }
-        ]
-      },
-      {
-        name: 'security',
-        patterns: [
-          { pattern: '(password|secret|token|key)\\s*=\\s*[\'"][^\'"]+"\'', message: 'Do not hardcode sensitive information' },
-          { pattern: 'eval\\s*\\(', message: 'Avoid using eval() for security reasons' },
-          { pattern: '\\.innerHTML\\s*=', message: 'Use safer alternatives to innerHTML' },
-          { pattern: '\\bdebugger\\b', message: 'Remove debugger statements' },
-          { pattern: '\\b(http|ws)://', message: 'Use HTTPS/WSS for secure connections' }
-        ]
+    // Copy MDC files from roles to rules directory
+    const roles = ['frontend', 'backend', 'infra', 'devops'];
+    for (const role of roles) {
+      const roleTemplatePath = path.join(templatesDir, 'roles', `${role}.cursor`);
+      const roleRulesPath = path.join(rulesDir, `${role}.mdc`);
+      
+      if (fs.existsSync(roleTemplatePath)) {
+        // Read the template content
+        const templateContent = fs.readFileSync(roleTemplatePath, 'utf8');
+        
+        // Ensure the content is in MDC format
+        if (!templateContent.includes('---')) {
+          // Convert to MDC format if needed
+          const mdcContent = `---
+description: ${role} development rules
+globs: ["**/*.{js,jsx,ts,tsx}"]
+alwaysApply: false
+---
+${templateContent}`;
+          fs.writeFileSync(roleRulesPath, mdcContent);
+        } else {
+          fs.writeFileSync(roleRulesPath, templateContent);
+        }
+        info(`Copied ${role} rules to: ${path.relative(projectRoot, roleRulesPath)}`);
       }
-    ];
-
-    // Create individual rule files
-    for (const rule of defaultRules) {
-      const ruleFile = path.join(rulesDir, `${rule.name}.json`);
-      const ruleWithMeta = {
-        ...rule,
-        enabled: true,
-        severity: rule.name === 'security' ? 'error' : 'warn',
-        scope: 'global'
-      };
-      await fs.writeJson(ruleFile, ruleWithMeta, { spaces: 2 });
-      info(`Created rule file: ${path.relative(projectRoot, ruleFile)}`);
     }
-
-    // Create rules index
-    const rulesIndex = {
-      version: '1.1.0',
-      rules: defaultRules.map(rule => ({
-        name: rule.name,
-        file: `${rule.name}.json`,
-        enabled: true,
-        severity: rule.name === 'security' ? 'error' : 'warn'
-      }))
-    };
-    await fs.writeJson(path.join(rulesDir, 'index.json'), rulesIndex, { spaces: 2 });
-    info('Created rules index file');
 
     // Create or update config.json
     const configPath = path.join(cursorDir, 'config.json');
