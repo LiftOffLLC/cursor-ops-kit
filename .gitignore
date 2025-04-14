@@ -1,6 +1,5 @@
 # Dependencies
 node_modules/
-package-lock.json
 yarn.lock
 pnpm-lock.yaml
 
@@ -54,6 +53,17 @@ coverage/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Infrastructure
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+.terraform.lock.hcl
+*.tfplan
+*.tfplan.json
+aws-credentials.json
+~/.aws/
 
 # Misc
 *.pid

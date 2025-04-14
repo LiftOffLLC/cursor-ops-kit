@@ -1,0 +1,326 @@
+# Infrastructure Development Rules
+
+## Cloud Infrastructure
+
+**Enabled:** true
+**Severity:** error
+
+### Patterns
+
+- Pattern: `resource\s+"aws_vpc"`
+  Message: Implement proper VPC design with public and private subnets
+
+- Pattern: `resource\s+"aws_subnet"`
+  Message: Use CIDR blocks efficiently and document subnet purposes
+
+- Pattern: `resource\s+"aws_security_group"`
+  Message: Follow principle of least privilege in security group rules
+
+- Pattern: `resource\s+"aws_route_table"`
+  Message: Document routing rules and maintain proper network segmentation
+
+- Pattern: `resource\s+"aws_iam_role"`
+  Message: Implement least privilege IAM roles
+
+- Pattern: `resource\s+"aws_iam_policy"`
+  Message: Use managed policies and document custom policies
+
+## Network Architecture
+
+**Enabled:** true
+**Severity:** error
+
+### Patterns
+
+- Pattern: `resource\s+"aws_internet_gateway"`
+  Message: Implement proper internet gateway configuration
+
+- Pattern: `resource\s+"aws_nat_gateway"`
+  Message: Configure NAT gateways for private subnet internet access
+
+- Pattern: `resource\s+"aws_vpc_endpoint"`
+  Message: Use VPC endpoints for AWS service access
+
+- Pattern: `resource\s+"aws_vpn_connection"`
+  Message: Implement secure VPN connections with proper encryption
+
+- Pattern: `resource\s+"aws_direct_connect"`
+  Message: Configure proper Direct Connect settings
+
+- Pattern: `resource\s+"aws_route53_zone"`
+  Message: Implement proper DNS management
+
+## Load Balancing
+
+**Enabled:** true
+**Severity:** error
+
+### Patterns
+
+- Pattern: `resource\s+"aws_lb"`
+  Message: Configure proper load balancer health checks
+
+- Pattern: `resource\s+"aws_lb_listener"`
+  Message: Implement SSL/TLS termination and proper certificate management
+
+- Pattern: `resource\s+"aws_lb_target_group"`
+  Message: Set appropriate target group settings and health check parameters
+
+- Pattern: `resource\s+"aws_lb_listener_rule"`
+  Message: Implement proper routing rules
+
+- Pattern: `resource\s+"aws_lb_ssl_policy"`
+  Message: Use secure SSL/TLS policies
+
+## Auto Scaling
+
+**Enabled:** true
+**Severity:** warning
+
+### Patterns
+
+- Pattern: `resource\s+"aws_autoscaling_group"`
+  Message: Configure proper scaling policies and cooldown periods
+
+- Pattern: `resource\s+"aws_launch_configuration"`
+  Message: Use latest AMIs and implement proper instance configurations
+
+- Pattern: `resource\s+"aws_autoscaling_policy"`
+  Message: Set appropriate scaling metrics and thresholds
+
+- Pattern: `resource\s+"aws_cloudwatch_metric_alarm"`
+  Message: Configure proper scaling alarms
+
+## Storage
+
+**Enabled:** true
+**Severity:** error
+
+### Patterns
+
+- Pattern: `resource\s+"aws_ebs_volume"`
+  Message: Implement proper EBS volume encryption and backup
+
+- Pattern: `resource\s+"aws_s3_bucket"`
+  Message: Configure proper bucket policies and versioning
+
+- Pattern: `resource\s+"aws_efs_file_system"`
+  Message: Set appropriate performance mode and throughput
+
+- Pattern: `resource\s+"aws_glacier_vault"`
+  Message: Implement proper data archiving strategies
+
+- Pattern: `resource\s+"aws_storagegateway"`
+  Message: Configure proper hybrid storage solutions
+
+## Database Infrastructure
+
+**Enabled:** true
+**Severity:** error
+
+### Patterns
+
+- Pattern: `resource\s+"aws_db_instance"`
+  Message: Configure proper backup retention and maintenance windows
+
+- Pattern: `resource\s+"aws_rds_cluster"`
+  Message: Implement proper RDS cluster configuration and failover
+
+- Pattern: `resource\s+"aws_elasticache_cluster"`
+  Message: Set appropriate cache node types and security groups
+
+- Pattern: `resource\s+"aws_dynamodb_table"`
+  Message: Configure proper throughput and indexes
+
+- Pattern: `resource\s+"aws_redshift_cluster"`
+  Message: Implement proper data warehouse configuration
+
+## Monitoring & Logging
+
+**Enabled:** true
+**Severity:** warning
+
+### Patterns
+
+- Pattern: `resource\s+"aws_cloudwatch_metric_alarm"`
+  Message: Configure appropriate alarm thresholds and actions
+
+- Pattern: `resource\s+"aws_cloudwatch_log_group"`
+  Message: Set proper log retention policies
+
+- Pattern: `resource\s+"aws_cloudwatch_dashboard"`
+  Message: Create comprehensive monitoring dashboards
+
+- Pattern: `resource\s+"aws_cloudwatch_event_rule"`
+  Message: Implement proper event monitoring
+
+## Security & Compliance
+
+**Enabled:** true
+**Severity:** error
+
+### Patterns
+
+- Pattern: `resource\s+"aws_kms_key"`
+  Message: Implement proper key rotation and access policies
+
+- Pattern: `resource\s+"aws_iam_role"`
+  Message: Follow principle of least privilege in IAM roles
+
+- Pattern: `resource\s+"aws_iam_policy"`
+  Message: Document and review IAM policies regularly
+
+- Pattern: `resource\s+"aws_secretsmanager_secret"`
+  Message: Implement proper secrets management
+
+- Pattern: `resource\s+"aws_guardduty_detector"`
+  Message: Configure proper threat detection
+
+## High Availability
+
+**Enabled:** true
+**Severity:** error
+
+### Patterns
+
+- Pattern: `multi_az\s*=\s*true`
+  Message: Implement multi-AZ deployment for critical resources
+
+- Pattern: `resource\s+"aws_route53_record"`
+  Message: Configure proper DNS failover and health checks
+
+- Pattern: `resource\s+"aws_cloudfront_distribution"`
+  Message: Set up proper CDN configuration and caching rules
+
+- Pattern: `resource\s+"aws_globalaccelerator"`
+  Message: Implement proper global acceleration
+
+## Cost Optimization
+
+**Enabled:** true
+**Severity:** warning
+
+### Patterns
+
+- Pattern: `resource\s+"aws_budgets_budget"`
+  Message: Implement cost monitoring and alerts
+
+- Pattern: `resource\s+"aws_ec2_spot_fleet_request"`
+  Message: Use spot instances where appropriate
+
+- Pattern: `resource\s+"aws_ec2_launch_template"`
+  Message: Optimize instance types and configurations
+
+- Pattern: `resource\s+"aws_cost_explorer"`
+  Message: Implement proper cost analysis
+
+## Disaster Recovery
+
+**Enabled:** true
+**Severity:** error
+
+### Patterns
+
+- Pattern: `resource\s+"aws_backup_plan"`
+  Message: Implement comprehensive backup strategies
+
+- Pattern: `resource\s+"aws_dr_recovery_group"`
+  Message: Document and test disaster recovery procedures
+
+- Pattern: `resource\s+"aws_cloudformation_stack"`
+  Message: Maintain infrastructure as code templates for recovery
+
+- Pattern: `resource\s+"aws_s3_bucket_replication"`
+  Message: Implement proper data replication
+
+## Infrastructure as Code
+
+**Enabled:** true
+**Severity:** error
+
+### Patterns
+
+- Pattern: `terraform\s*{`
+  Message: Use proper Terraform configuration
+
+- Pattern: `module\s+"[^"]+"\s*{`
+  Message: Document module usage and dependencies
+
+- Pattern: `variable\s+"[^"]+"\s*{`
+  Message: Define variables with proper types and descriptions
+
+- Pattern: `output\s+"[^"]+"\s*{`
+  Message: Document outputs and their usage
+
+## Container Infrastructure
+
+**Enabled:** true
+**Severity:** error
+
+### Patterns
+
+- Pattern: `resource\s+"aws_ecs_cluster"`
+  Message: Configure proper ECS cluster settings
+
+- Pattern: `resource\s+"aws_ecs_service"`
+  Message: Implement proper service configuration
+
+- Pattern: `resource\s+"aws_ecs_task_definition"`
+  Message: Set appropriate task definitions
+
+- Pattern: `resource\s+"aws_ecr_repository"`
+  Message: Configure proper container registry settings
+
+## Serverless Infrastructure
+
+**Enabled:** true
+**Severity:** error
+
+### Patterns
+
+- Pattern: `resource\s+"aws_lambda_function"`
+  Message: Configure proper Lambda function settings
+
+- Pattern: `resource\s+"aws_api_gateway_rest_api"`
+  Message: Implement proper API Gateway configuration
+
+- Pattern: `resource\s+"aws_step_functions_state_machine"`
+  Message: Set up proper workflow definitions
+
+- Pattern: `resource\s+"aws_eventbridge_rule"`
+  Message: Configure proper event routing
+
+## Edge Computing
+
+**Enabled:** true
+**Severity:** error
+
+### Patterns
+
+- Pattern: `resource\s+"aws_lambda@edge"`
+  Message: Implement proper edge function configuration
+
+- Pattern: `resource\s+"aws_cloudfront_function"`
+  Message: Configure proper edge functions
+
+- Pattern: `resource\s+"aws_waf_web_acl"`
+  Message: Set up proper web application firewall rules
+
+## Compliance & Governance
+
+**Enabled:** true
+**Severity:** error
+
+### Patterns
+
+- Pattern: `resource\s+"aws_config_config_rule"`
+  Message: Implement proper compliance rules
+
+- Pattern: `resource\s+"aws_organizations_policy"`
+  Message: Configure proper organizational policies
+
+- Pattern: `resource\s+"aws_controltower_control"`
+  Message: Set up proper control tower controls
+
+- Pattern: `resource\s+"aws_auditmanager_assessment"`
+  Message: Implement proper audit management 

@@ -1,57 +1,41 @@
 {
   "name": "@liftoffllc/cursor-ops-kit",
-  "version": "1.0.0",
-  "description": "CLI to enforce Cursor IDE rules, CI, and hooks across repositories",
+  "version": "1.2.0",
+  "description": "A toolkit for managing Cursor AI configurations across different project roles",
   "main": "lib/init.js",
   "bin": {
     "cursor-ops": "bin/cli.js"
   },
   "scripts": {
     "test": "jest --passWithNoTests",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "prepublishOnly": "npm run test && npm run lint"
+    "prepare": "node scripts/prepare.js"
   },
-  "keywords": ["cursor", "cli", "ai", "devops", "frontend", "infra"],
-  "author": "LiftOffLLC <noreply@liftoffllc.com> (https://github.com/LiftOffLLC)",
+  "keywords": [
+    "cursor",
+    "ai",
+    "configuration",
+    "toolkit"
+  ],
+  "author": "LiftOff LLC",
   "license": "MIT",
   "dependencies": {
-    "chalk": "^4.1.2",
     "fs-extra": "^11.2.0",
     "yargs": "^17.7.2"
   },
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:LiftOffLLC/cursor-ops-kit.git"
-  },
-  "bugs": {
-    "url": "https://github.com/LiftOffLLC/cursor-ops-kit/issues"
-  },
   "devDependencies": {
-    "@types/jest": "^29.5.0",
-    "eslint": "^8.40.0",
-    "jest": "^29.5.0"
+    "eslint": "^8.56.0",
+    "jest": "^29.7.0"
   },
   "engines": {
     "node": ">=14.0.0"
   },
-  "publishConfig": {
-    "access": "public"
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/LiftOffLLC/cursor-ops-kit.git"
   },
-  "files": [
-    "lib",
-    "bin",
-    "templates",
-    "README.md"
-  ],
-  "jest": {
-    "testEnvironment": "node",
-    "coverageDirectory": "coverage",
-    "collectCoverageFrom": [
-      "lib/**/*.js",
-      "bin/**/*.js"
-    ]
-  }
+  "bugs": {
+    "url": "https://github.com/LiftOffLLC/cursor-ops-kit/issues"
+  },
+  "homepage": "https://github.com/LiftOffLLC/cursor-ops-kit#readme"
 }

@@ -1,0 +1,308 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# DevOps Development Rules
+
+## Infrastructure as Code
+
+**Enabled:** true
+**Severity:** error
+
+### Patterns
+
+- Pattern: `resource\s+"[^"]+"\s+"[^"]+"\s*{`
+  Message: Use consistent resource naming conventions
+
+- Pattern: `provider\s+"[^"]+"\s*{`
+  Message: Configure provider settings properly
+
+- Pattern: `terraform\s*{`
+  Message: Use proper Terraform configuration
+
+- Pattern: `module\s+"[^"]+"\s*{`
+  Message: Document module usage and dependencies
+
+- Pattern: `variable\s+"[^"]+"\s*{`
+  Message: Define variables with proper types and descriptions
+
+## Docker
+
+**Enabled:** true
+**Severity:** error
+
+### Patterns
+
+- Pattern: `FROM\s+[^:]+:latest`
+  Message: Use specific version tags instead of latest
+
+- Pattern: `COPY\s+\.\s+`
+  Message: Use .dockerignore to exclude unnecessary files
+
+- Pattern: `RUN\s+apt-get\s+install`
+  Message: Combine RUN commands and clean up apt cache
+
+- Pattern: `EXPOSE\s+\d+`
+  Message: Document port usage and protocols
+
+- Pattern: `ENV\s+\w+`
+  Message: Use ARG for build-time variables
+
+## CI/CD
+
+**Enabled:** true
+**Severity:** error
+
+### Patterns
+
+- Pattern: `name:\s*['"]CI/CD`
+  Message: Use descriptive pipeline names
+
+- Pattern: `on:\s*\[?['"]push['"]\]?`
+  Message: Configure proper trigger conditions
+
+- Pattern: `runs-on:\s*['"]`
+  Message: Specify appropriate runner environments
+
+- Pattern: `uses:\s*actions/`
+  Message: Pin action versions for security
+
+- Pattern: `with:\s*{`
+  Message: Document action inputs
+
+## Kubernetes
+
+**Enabled:** true
+**Severity:** error
+
+### Patterns
+
+- Pattern: `apiVersion:\s*v1`
+  Message: Use appropriate API versions
+
+- Pattern: `kind:\s*Deployment`
+  Message: Configure proper resource types
+
+- Pattern: `replicas:\s*\d+`
+  Message: Set appropriate replica counts
+
+- Pattern: `resources:\s*{`
+  Message: Define resource limits and requests
+
+- Pattern: `livenessProbe:`
+  Message: Configure proper health checks
+
+## Security
+
+**Enabled:** true
+**Severity:** error
+
+### Patterns
+
+- Pattern: `secret_key\s*=\s*['"][^'"]+['"]`
+  Message: Use secrets management
+
+- Pattern: `access_key\s*=\s*['"][^'"]+['"]`
+  Message: Use IAM roles instead of access keys
+
+- Pattern: `password\s*=\s*['"][^'"]+['"]`
+  Message: Use secrets management for credentials
+
+- Pattern: `token\s*=\s*['"][^'"]+['"]`
+  Message: Use secure token management
+
+## Monitoring
+
+**Enabled:** true
+**Severity:** warning
+
+### Patterns
+
+- Pattern: `prometheus\.yml`
+  Message: Configure proper metrics collection
+
+- Pattern: `grafana\.ini`
+  Message: Set up proper dashboards
+
+- Pattern: `alertmanager\.yml`
+  Message: Configure proper alerting
+
+- Pattern: `logging\.conf`
+  Message: Set up proper log aggregation
+
+## Backup
+
+**Enabled:** true
+**Severity:** error
+
+### Patterns
+
+- Pattern: `backup\s*{`
+  Message: Implement proper backup strategies
+
+- Pattern: `retention\s*=\s*\d+`
+  Message: Set appropriate retention periods
+
+- Pattern: `schedule\s*=\s*['"]`
+  Message: Configure proper backup schedules
+
+## Networking
+
+**Enabled:** true
+**Severity:** error
+
+### Patterns
+
+- Pattern: `network\s*{`
+  Message: Configure proper network settings
+
+- Pattern: `subnet\s*=\s*['"]`
+  Message: Use proper subnet configurations
+
+- Pattern: `security_group\s*{`
+  Message: Implement proper security groups
+
+## Storage
+
+**Enabled:** true
+**Severity:** error
+
+### Patterns
+
+- Pattern: `volume\s*{`
+  Message: Configure proper storage volumes
+
+- Pattern: `persistent_volume\s*{`
+  Message: Set up proper persistent storage
+
+- Pattern: `storage_class\s*{`
+  Message: Define appropriate storage classes
+
+## Secrets Management
+
+**Enabled:** true
+**Severity:** error
+
+### Patterns
+
+- Pattern: `vault\s*{`
+  Message: Use proper secrets management
+
+- Pattern: `secret\s*{`
+  Message: Implement proper secret handling
+
+- Pattern: `encryption\s*{`
+  Message: Configure proper encryption
+
+## Logging
+
+**Enabled:** true
+**Severity:** warning
+
+### Patterns
+
+- Pattern: `log\s*{`
+  Message: Set up proper logging configuration
+
+- Pattern: `fluentd\s*{`
+  Message: Configure proper log forwarding
+
+- Pattern: `logstash\s*{`
+  Message: Set up proper log processing
+
+## Deployment
+
+**Enabled:** true
+**Severity:** error
+
+### Patterns
+
+- Pattern: `deployment\s*{`
+  Message: Configure proper deployment strategies
+
+- Pattern: `rollout\s*{`
+  Message: Implement proper rollout procedures
+
+- Pattern: `canary\s*{`
+  Message: Set up proper canary deployments
+
+## Testing
+
+**Enabled:** true
+**Severity:** warning
+
+### Patterns
+
+- Pattern: `test\s*{`
+  Message: Implement infrastructure tests
+
+- Pattern: `validation\s*{`
+  Message: Set up proper validation checks
+
+- Pattern: `compliance\s*{`
+  Message: Configure compliance checks
+
+## Documentation
+
+**Enabled:** true
+**Severity:** warning
+
+### Patterns
+
+- Pattern: `description\s*=\s*['"]`
+  Message: Document infrastructure components
+
+- Pattern: `README\.md`
+  Message: Maintain up-to-date documentation
+
+- Pattern: `docs/`
+  Message: Keep documentation organized
+
+## Cost Management
+
+**Enabled:** true
+**Severity:** warning
+
+### Patterns
+
+- Pattern: `cost\s*{`
+  Message: Implement cost monitoring
+
+- Pattern: `budget\s*{`
+  Message: Set up budget alerts
+
+- Pattern: `optimization\s*{`
+  Message: Configure cost optimization
+
+## Disaster Recovery
+
+**Enabled:** true
+**Severity:** error
+
+### Patterns
+
+- Pattern: `recovery\s*{`
+  Message: Implement disaster recovery plans
+
+- Pattern: `backup\s*{`
+  Message: Set up proper backup procedures
+
+- Pattern: `restore\s*{`
+  Message: Configure restore procedures
+
+## Compliance
+
+**Enabled:** true
+**Severity:** error
+
+### Patterns
+
+- Pattern: `compliance\s*{`
+  Message: Implement compliance checks
+
+- Pattern: `audit\s*{`
+  Message: Set up proper auditing
+
+- Pattern: `policy\s*{`
+  Message: Define security policies
