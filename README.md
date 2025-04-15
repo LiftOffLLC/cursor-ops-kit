@@ -182,4 +182,4 @@ Additional rules and overrides for specific roles.
 For bugs, feature requests, or contributions, please create an issue or submit a pull request.
 
 ## License
-Developed by LiftOff LLC Engineering 🚀
+Developed by [LiftOff LLC](https://www.liftoffllc.com) Engineering 🚀
