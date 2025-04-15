@@ -26,7 +26,7 @@ A clear and concise description of what actually happened.
 - OS: [e.g. macOS, Windows, Linux]
 - Node.js Version: [e.g. 14.0.0]
 - npm Version: [e.g. 6.14.0]
-- Cursor Ops Kit Version: [e.g. 1.2.0]
+- Cursor Ops Kit Version: [e.g. 1.2.1]
 
 ## Additional Context
 Add any other context about the problem here.

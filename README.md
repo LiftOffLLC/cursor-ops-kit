@@ -85,7 +85,7 @@ npx cursor-ops version
 ### Base Configuration (.cursor)
 ```json
 {
-  "version": "1.2.0",
+  "version": "1.2.1",
   "rules": [
     {
       "name": "enforceNaming",
@@ -182,4 +182,4 @@ Additional rules and overrides for specific roles.
 For bugs, feature requests, or contributions, please create an issue or submit a pull request.
 
 ## License
-Developed by LiftOff LLC Engineering 🚀
+Developed by [LiftOff LLC](https://www.liftoffllc.com) Engineering 🚀
