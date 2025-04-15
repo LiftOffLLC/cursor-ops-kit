@@ -1,6 +1,6 @@
 {
   "name": "@liftoffllc/cursor-ops-kit",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "A toolkit for managing Cursor AI configurations across different project roles",
   "main": "lib/init.js",
   "bin": {
